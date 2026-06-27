@@ -1,0 +1,858 @@
+---
+import Layout from '../layouts/Layout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<Layout title="Quantum Threshold Keys — Live Demo | QVault">
+<style>
+  /* ── BASE ─────────────────────────────────────────── */
+  :root {
+    --bg: #050a0e;
+    --surface: #0a1628;
+    --surface2: #0d1f35;
+    --accent: #00d4ff;
+    --accent-dim: rgba(0,212,255,.1);
+    --green: #00e676;
+    --green-dim: rgba(0,230,118,.1);
+    --red: #ff4444;
+    --red-dim: rgba(255,68,68,.1);
+    --orange: #ff9800;
+    --text: #e0f0ff;
+    --muted: #4a6fa5;
+    --border: #0a3a5c;
+    --r: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── HERO ─────────────────────────────────────────── */
+  .demo-hero {
+    max-width: 880px; margin: 0 auto; padding: 5rem 2rem 3rem;
+    text-align: center;
+  }
+  .demo-hero .back-link {
+    display: inline-flex; align-items: center; gap: .4rem;
+    color: var(--muted); font-size: .82rem; text-decoration: none;
+    margin-bottom: 2rem; transition: color .2s;
+  }
+  .demo-hero .back-link:hover { color: var(--accent); }
+  .badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--accent-dim); border: 1px solid rgba(0,212,255,.3);
+    color: var(--accent); padding: .3rem .9rem; border-radius: 100px;
+    font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .badge::before {
+    content: ''; width: 6px; height: 6px; background: var(--accent);
+    border-radius: 50%; animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  .demo-hero h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800;
+    letter-spacing: -.03em; margin-bottom: 1rem; line-height: 1.1;
+  }
+  .demo-hero h1 span {
+    background: linear-gradient(135deg, #00d4ff, #0066cc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .demo-hero p {
+    color: var(--muted); font-size: .95rem; line-height: 1.75; max-width: 640px; margin: 0 auto;
+  }
+
+  /* ── CONCEPT CARDS ───────────────────────────────── */
+  .concept-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    max-width: 900px; margin: 3rem auto 0; padding: 0 2rem;
+  }
+  .concept-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1.25rem; text-align: center;
+  }
+  .concept-card .icon { font-size: 1.5rem; margin-bottom: .5rem; }
+  .concept-card h3 { font-size: .88rem; font-weight: 700; margin-bottom: .3rem; }
+  .concept-card p { font-size: .76rem; color: var(--muted); line-height: 1.55; }
+
+  /* ── DEMO WRAPPER ─────────────────────────────────── */
+  .demo-wrapper {
+    max-width: 1100px; margin: 3rem auto 4rem; padding: 0 1.5rem;
+    display: flex; flex-direction: column; gap: 1.5rem;
+  }
+
+  /* ── PANEL ────────────────────────────────────────── */
+  .panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .panel-header {
+    display: flex; align-items: center; gap: .75rem;
+    padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .step-badge {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); color: #050a0e;
+    font-size: .72rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .panel-header h2 { font-size: .95rem; font-weight: 700; }
+  .panel-header p { font-size: .78rem; color: var(--muted); margin-left: auto; }
+  .panel-body { padding: 1.5rem; }
+
+  /* ── SETUP FORM ───────────────────────────────────── */
+  .setup-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; align-items: end; }
+  .form-group { display: flex; flex-direction: column; gap: .4rem; }
+  .form-group label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .form-group input, .form-group select {
+    background: #051428; border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: .65rem 1rem; font-size: .92rem;
+    outline: none; transition: border-color .2s; font-family: 'JetBrains Mono', monospace;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group .hint { font-size: .7rem; color: var(--muted); margin-top: .2rem; }
+  .form-group select option { background: #051428; }
+  .btn-generate {
+    background: linear-gradient(135deg, #00d4ff, #0066cc); color: #050a0e;
+    border: none; padding: .65rem 1.5rem; border-radius: 8px;
+    font-weight: 700; font-size: .88rem; cursor: pointer;
+    transition: opacity .2s, transform .2s; white-space: nowrap; height: 40px;
+  }
+  .btn-generate:hover { opacity: .9; transform: translateY(-1px); }
+  .poly-preview {
+    margin-top: 1.25rem; padding: 1rem 1.25rem;
+    background: #051428; border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--muted);
+    display: none;
+  }
+  .poly-preview.visible { display: block; }
+  .poly-preview strong { color: var(--accent); }
+
+  /* ── SHARES TABLE ─────────────────────────────────── */
+  #shares-section { display: none; }
+  table.shares-table {
+    width: 100%; border-collapse: collapse; font-size: .85rem;
+  }
+  .shares-table th {
+    text-align: left; padding: .6rem 1rem; font-size: .7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+    border-bottom: 1px solid var(--border); background: var(--surface2);
+  }
+  .shares-table td { padding: .75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .shares-table tr:last-child td { border-bottom: none; }
+  .shares-table tr.selected-row { background: rgba(0,212,255,.05); }
+  .shares-table tr.tampered-row td .y-val { color: var(--orange); }
+  .holder-name { font-weight: 600; }
+  .x-val { font-family: monospace; color: var(--accent); }
+  .y-val { font-family: monospace; font-weight: 600; }
+  .share-status {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .72rem; font-weight: 700; padding: .2rem .6rem;
+    border-radius: 100px;
+  }
+  .status-valid { background: var(--green-dim); color: var(--green); }
+  .status-tampered { background: rgba(255,152,0,.12); color: var(--orange); }
+  .btn-edit {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: .25rem .65rem; border-radius: 6px; font-size: .72rem; cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-reset-share {
+    background: transparent; border: 1px solid rgba(255,152,0,.3); color: var(--orange);
+    padding: .25rem .65rem; border-radius: 6px; font-size: .72rem; cursor: pointer;
+    transition: border-color .2s;
+  }
+  .inline-edit {
+    background: #051428; border: 1px solid var(--accent); color: var(--text);
+    border-radius: 6px; padding: .3rem .6rem; font-family: monospace;
+    font-size: .85rem; width: 100px; outline: none;
+  }
+  .recon-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+
+  /* ── VERIFY SECTION ───────────────────────────────── */
+  #verify-section { display: none; }
+  .verify-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+  }
+  .verify-form {
+    display: flex; flex-direction: column; gap: .75rem;
+  }
+  .verify-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .verify-form .form-group input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem; font-weight: 700;
+  }
+  .btn-verify {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    padding: .65rem 1.25rem; border-radius: 8px; font-weight: 700;
+    font-size: .88rem; cursor: pointer; transition: border-color .2s;
+    width: 100%;
+  }
+  .btn-verify:hover { border-color: var(--accent); }
+  .verify-result {
+    background: #051428; border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem; display: none;
+  }
+  .verify-result.visible { display: block; }
+  .result-valid { border-color: rgba(0,230,118,.4); }
+  .result-invalid { border-color: rgba(255,68,68,.4); }
+  .result-header {
+    display: flex; align-items: center; gap: .6rem;
+    font-size: 1rem; font-weight: 800; margin-bottom: .75rem;
+  }
+  .result-icon { font-size: 1.4rem; }
+  .result-valid .result-header { color: var(--green); }
+  .result-invalid .result-header { color: var(--red); }
+  .proof-details {
+    background: var(--surface); border-radius: 6px; padding: .75rem 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+    color: var(--muted); display: flex; flex-direction: column; gap: .3rem;
+  }
+  .proof-line { display: flex; gap: .5rem; }
+  .proof-label { color: var(--muted); white-space: nowrap; }
+  .proof-value { color: var(--text); word-break: break-all; }
+  .proof-value.match { color: var(--green); }
+  .proof-value.no-match { color: var(--red); }
+  .verify-explainer {
+    background: var(--surface2); border-radius: 8px; padding: 1.25rem;
+    font-size: .82rem; color: var(--muted); line-height: 1.7;
+  }
+  .verify-explainer strong { color: var(--text); }
+
+  /* ── RECONSTRUCT SECTION ──────────────────────────── */
+  #reconstruct-section { display: none; }
+  .recon-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+  .selection-info {
+    background: #051428; border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem; font-size: .82rem; color: var(--muted); margin-bottom: 1rem;
+  }
+  .selection-info strong { color: var(--accent); }
+  .btn-reconstruct {
+    background: linear-gradient(135deg, #00d4ff, #0066cc); color: #050a0e;
+    border: none; padding: .75rem 1.5rem; border-radius: 8px;
+    font-weight: 700; font-size: .9rem; cursor: pointer;
+    transition: opacity .2s; width: 100%; margin-bottom: .75rem;
+  }
+  .btn-reconstruct:hover { opacity: .9; }
+  .btn-reconstruct:disabled {
+    background: var(--border); color: var(--muted); cursor: not-allowed; opacity: 1;
+  }
+  .btn-clear-sel {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: .5rem 1rem; border-radius: 8px; font-size: .8rem; cursor: pointer;
+    width: 100%; transition: border-color .2s;
+  }
+  .btn-clear-sel:hover { border-color: var(--accent); }
+  .recon-result {
+    background: #051428; border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.25rem; display: none;
+  }
+  .recon-result.visible { display: block; }
+  .recon-result.success { border-color: rgba(0,230,118,.4); }
+  .recon-result.failure { border-color: rgba(255,68,68,.4); }
+  .recon-result.warning { border-color: rgba(255,152,0,.4); }
+  .recon-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem; font-weight: 800; margin: .5rem 0;
+  }
+  .recon-key.correct { color: var(--green); }
+  .recon-key.wrong { color: var(--red); }
+  .recon-message { font-size: .82rem; color: var(--muted); margin-top: .5rem; line-height: 1.6; }
+  .lagrange-steps {
+    margin-top: 1rem; background: var(--surface); border-radius: 6px;
+    padding: .75rem 1rem; font-family: monospace; font-size: .73rem;
+    color: var(--muted); display: flex; flex-direction: column; gap: .25rem;
+  }
+  .lagrange-step { color: var(--muted); }
+  .lagrange-step.final { color: var(--accent); font-weight: 700; }
+  .recon-explainer {
+    background: var(--surface2); border-radius: 8px; padding: 1.25rem;
+    font-size: .82rem; color: var(--muted); line-height: 1.7;
+  }
+  .recon-explainer strong { color: var(--text); }
+  .info-tag {
+    display: inline-block; font-size: .68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    padding: .15rem .5rem; border-radius: 4px; margin-bottom: .5rem;
+  }
+  .info-tag.info { background: var(--accent-dim); color: var(--accent); }
+
+  /* ── TOOLTIP EXAMPLE ──────────────────────────────── */
+  .formula-box {
+    display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+    background: #051428; border: 1px solid var(--border); border-radius: 8px;
+    padding: .75rem 1rem; font-family: monospace; font-size: .82rem;
+    color: var(--muted); margin-bottom: .75rem;
+  }
+  .formula-box .secret-key { color: var(--accent); font-weight: 700; }
+  .formula-box .hidden { color: var(--muted); opacity: .5; }
+
+  @media(max-width: 768px) {
+    .setup-grid { grid-template-columns: 1fr 1fr; }
+    .verify-grid, .recon-layout { grid-template-columns: 1fr; }
+    .concept-row { grid-template-columns: 1fr; }
+    .verify-form .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- HERO -->
+<div class="demo-hero">
+  <a href={base} class="back-link">← QVault</a>
+  <div class="badge">Live Cryptographic Demo</div>
+  <h1>Quantum Threshold<br><span>Key Protocol</span></h1>
+  <p>
+    A private key is represented as a secret polynomial <strong>f(x)</strong>.
+    The key itself is <strong>f(0)</strong> — never transmitted directly.
+    Instead, <strong>N shares</strong> (evaluations of the polynomial) are distributed
+    to N holders. Any <strong>K holders</strong> can reconstruct the key via Lagrange
+    interpolation. Fewer than K holders learn nothing.
+  </p>
+</div>
+
+<div class="concept-row">
+  <div class="concept-card">
+    <div class="icon">🔑</div>
+    <h3>Private Key = f(0)</h3>
+    <p>The secret is the y-intercept of a polynomial. It is never sent to anyone directly.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🧩</div>
+    <h3>Share = f(i)</h3>
+    <p>Each holder receives one point on the polynomial: (i, f(i)). Points alone reveal nothing about f(0).</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🔓</div>
+    <h3>K-of-N Threshold</h3>
+    <p>Gather K shares → Lagrange interpolation → recover f(0). K−1 shares give zero information.</p>
+  </div>
+</div>
+
+<div class="demo-wrapper">
+
+  <!-- ── STEP 1: SETUP ────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="step-badge">1</div>
+      <h2>Define the private key and splitting parameters</h2>
+      <p>Prover only</p>
+    </div>
+    <div class="panel-body">
+      <div class="setup-grid">
+        <div class="form-group">
+          <label>Private Key (secret)</label>
+          <input id="input-secret" type="number" value="1337" min="1" max="65535" />
+          <span class="hint">Integer 1 – 65535. This is f(0).</span>
+        </div>
+        <div class="form-group">
+          <label>Total Shares N</label>
+          <select id="input-n">
+            <option value="3">3 holders</option>
+            <option value="4">4 holders</option>
+            <option value="5" selected>5 holders</option>
+            <option value="6">6 holders</option>
+            <option value="7">7 holders</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Threshold K</label>
+          <select id="input-k">
+            <option value="2">2 of N</option>
+            <option value="3" selected>3 of N</option>
+            <option value="4">4 of N</option>
+            <option value="5">5 of N</option>
+          </select>
+        </div>
+        <button class="btn-generate" onclick="generateShares()">Generate Shares</button>
+      </div>
+      <div class="poly-preview" id="poly-preview">
+        Polynomial: <strong id="poly-expr">—</strong>
+        &nbsp;·&nbsp; Field: <strong>GF(65537)</strong>
+        &nbsp;·&nbsp; Degree: <strong id="poly-degree">—</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: SHARES ───────────────────────────────── -->
+  <div class="panel" id="shares-section">
+    <div class="panel-header">
+      <div class="step-badge">2</div>
+      <h2>Distributed shares — each holder receives one point on the polynomial</h2>
+      <p>Public ledger</p>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="shares-table">
+        <thead>
+          <tr>
+            <th>Holder</th>
+            <th>x (index)</th>
+            <th>f(x) — share value</th>
+            <th>Status</th>
+            <th>Actions</th>
+            <th style="text-align:center">Use for reconstruction</th>
+          </tr>
+        </thead>
+        <tbody id="shares-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: VERIFY ───────────────────────────────── -->
+  <div class="panel" id="verify-section">
+    <div class="panel-header">
+      <div class="step-badge">3</div>
+      <h2>Verify a share — prove you hold a valid point on the polynomial</h2>
+      <p>Anyone can verify</p>
+    </div>
+    <div class="panel-body">
+      <div class="verify-grid">
+        <div>
+          <div class="formula-box">
+            <span>Someone claims:</span>
+            <span><strong>f(</strong><span id="vf-x-preview" style="color:var(--accent)">x</span><strong>)</strong></span>
+            <span>=</span>
+            <span id="vf-y-preview" style="color:var(--text);font-weight:700">y</span>
+          </div>
+          <div class="verify-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>x (share index)</label>
+                <input id="v-x" type="number" value="3" min="1" max="10" oninput="updateVerifyPreview()" />
+              </div>
+              <div class="form-group">
+                <label>Claimed f(x)</label>
+                <input id="v-y" type="number" placeholder="e.g. 6" oninput="updateVerifyPreview()" />
+              </div>
+            </div>
+            <button class="btn-verify" onclick="verifyShare()">Verify this claim</button>
+          </div>
+        </div>
+        <div>
+          <div class="verify-result" id="verify-result"></div>
+          <div class="verify-explainer" id="verify-explainer" style="display:none">
+            <div class="info-tag info">How verification works</div>
+            <p id="verify-explain-text"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: RECONSTRUCT ─────────────────────────── -->
+  <div class="panel" id="reconstruct-section">
+    <div class="panel-header">
+      <div class="step-badge">4</div>
+      <h2>Reconstruct — select K shares and recover the private key via Lagrange interpolation</h2>
+      <p>Authorized parties</p>
+    </div>
+    <div class="panel-body">
+      <div class="recon-layout">
+        <div>
+          <div class="selection-info">
+            Select shares using the checkboxes in the table above.
+            Need at least <strong id="threshold-display">K</strong> shares.
+            Selected: <strong id="selected-count">0</strong>
+          </div>
+          <button class="btn-reconstruct" id="btn-reconstruct" onclick="reconstruct()" disabled>
+            Reconstruct Private Key
+          </button>
+          <button class="btn-clear-sel" onclick="clearSelection()">Clear selection</button>
+          <div class="recon-result" id="recon-result"></div>
+        </div>
+        <div class="recon-explainer">
+          <div class="info-tag info">Lagrange interpolation</div>
+          <p>
+            Given K points on a degree K−1 polynomial over GF(p), there is
+            <strong>exactly one polynomial</strong> passing through all of them.
+            The secret is recovered by evaluating that polynomial at x=0:
+          </p>
+          <br/>
+          <p style="font-family:monospace;font-size:.82rem;color:var(--accent)">
+            f(0) = Σ yᵢ · ∏(0−xⱼ)/(xᵢ−xⱼ) &nbsp;(mod p)
+          </p>
+          <br/>
+          <p>
+            With <strong>K−1 or fewer shares</strong>, the system is under-determined —
+            infinitely many polynomials pass through those points, each with a different f(0).
+            No computation can determine the secret.
+          </p>
+          <br/>
+          <p>
+            <strong>Tampering</strong>: if any selected share has been modified,
+            the interpolated polynomial changes and f(0) will not match the original key.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end demo-wrapper -->
+
+<script is:inline>
+// ─────────────────────────────────────────────────────────────
+// Arithmetic over GF(65537) — Fermat prime, all values [0, p-1]
+// ─────────────────────────────────────────────────────────────
+const P = 65537;
+
+function gfMod(n) { return ((n % P) + P) % P; }
+
+function gfPow(base, exp) {
+  base = gfMod(base);
+  let result = 1;
+  while (exp > 0) {
+    if (exp & 1) result = Math.round((result * base) % P);
+    exp = Math.floor(exp / 2);
+    base = Math.round((base * base) % P);
+  }
+  return result;
+}
+
+function gfInv(a) { return gfPow(gfMod(a), P - 2); } // Fermat's little theorem
+
+function evalPoly(coeffs, x) {
+  // f(x) = c[0] + c[1]*x + c[2]*x^2 + ... mod P
+  let result = 0;
+  let xp = 1; // x^i mod P
+  for (const c of coeffs) {
+    result = gfMod(result + Math.round((c * xp) % P));
+    xp = Math.round((xp * x) % P);
+  }
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Application state
+// ─────────────────────────────────────────────────────────────
+const state = {
+  secret: null,
+  n: 5,
+  k: 3,
+  coeffs: [],
+  shares: [], // [{x, yTrue, yDisplay, tampered, selected}]
+};
+
+// ─────────────────────────────────────────────────────────────
+// Share generation
+// ─────────────────────────────────────────────────────────────
+function generateShares() {
+  const secretVal = parseInt(document.getElementById('input-secret').value);
+  const nVal = parseInt(document.getElementById('input-n').value);
+  const kVal = parseInt(document.getElementById('input-k').value);
+
+  if (isNaN(secretVal) || secretVal < 1 || secretVal >= P) {
+    alert(`Secret must be an integer between 1 and ${P - 1}.`);
+    return;
+  }
+  if (kVal > nVal) {
+    alert(`Threshold K (${kVal}) cannot exceed total shares N (${nVal}).`);
+    return;
+  }
+
+  state.secret = secretVal;
+  state.n = nVal;
+  state.k = kVal;
+
+  // Polynomial: degree k-1, constant term = secret
+  // f(x) = secret + a₁x + a₂x² + ... + a_{k-1}x^{k-1}
+  state.coeffs = [secretVal];
+  for (let i = 1; i < kVal; i++) {
+    state.coeffs.push(1 + Math.floor(Math.random() * (P - 2)));
+  }
+
+  // Generate N shares: (1, f(1)), (2, f(2)), ..., (N, f(N))
+  state.shares = [];
+  for (let xi = 1; xi <= nVal; xi++) {
+    const yTrue = evalPoly(state.coeffs, xi);
+    state.shares.push({ x: xi, yTrue, yDisplay: yTrue, tampered: false, selected: false });
+  }
+
+  renderPolyPreview();
+  renderSharesTable();
+  document.getElementById('shares-section').style.display = 'block';
+  document.getElementById('verify-section').style.display = 'block';
+  document.getElementById('reconstruct-section').style.display = 'block';
+  document.getElementById('threshold-display').textContent = kVal;
+  document.getElementById('selected-count').textContent = '0';
+  document.getElementById('recon-result').className = 'recon-result';
+  document.getElementById('recon-result').style.display = 'none';
+  document.getElementById('verify-result').className = 'verify-result';
+  document.getElementById('verify-result').style.display = 'none';
+  document.getElementById('verify-explainer').style.display = 'none';
+  updateReconstructBtn();
+}
+
+// ─────────────────────────────────────────────────────────────
+// Polynomial preview
+// ─────────────────────────────────────────────────────────────
+function renderPolyPreview() {
+  const el = document.getElementById('poly-preview');
+  const expr = document.getElementById('poly-expr');
+  const deg = document.getElementById('poly-degree');
+
+  // Show with hidden coefficients (prover's secret)
+  let terms = ['[secret]'];
+  for (let i = 1; i < state.k; i++) {
+    const pow = i === 1 ? 'x' : `x^${i}`;
+    terms.push(`[hidden]·${pow}`);
+  }
+  expr.innerHTML = terms.join(' + ');
+  deg.textContent = state.k - 1;
+  el.classList.add('visible');
+}
+
+// ─────────────────────────────────────────────────────────────
+// Shares table
+// ─────────────────────────────────────────────────────────────
+const NAMES = ['Alice', 'Bob', 'Carol', 'Dave', 'Eve', 'Frank', 'Grace'];
+
+function renderSharesTable() {
+  const tbody = document.getElementById('shares-tbody');
+  tbody.innerHTML = '';
+
+  state.shares.forEach((share, idx) => {
+    const tr = document.createElement('tr');
+    tr.id = `row-${idx}`;
+    if (share.selected) tr.classList.add('selected-row');
+    if (share.tampered) tr.classList.add('tampered-row');
+
+    const statusHtml = share.tampered
+      ? `<span class="share-status status-tampered">⚠ Tampered</span>`
+      : `<span class="share-status status-valid">✓ Valid</span>`;
+
+    const actionBtn = share.tampered
+      ? `<button class="btn-reset-share" onclick="resetShare(${idx})">↩ Restore</button>`
+      : `<button class="btn-edit" onclick="editShare(${idx})">✏ Tamper</button>`;
+
+    tr.innerHTML = `
+      <td class="holder-name">${NAMES[idx] || 'Holder ' + (idx + 1)}</td>
+      <td class="x-val">${share.x}</td>
+      <td><span class="y-val" id="yval-${idx}">${share.yDisplay}</span></td>
+      <td>${statusHtml}</td>
+      <td>${actionBtn}</td>
+      <td style="text-align:center">
+        <input type="checkbox" class="recon-checkbox" id="chk-${idx}"
+          ${share.selected ? 'checked' : ''}
+          onchange="toggleSelect(${idx})" />
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editShare(idx) {
+  const share = state.shares[idx];
+  const yvalEl = document.getElementById(`yval-${idx}`);
+
+  yvalEl.innerHTML = `
+    <input class="inline-edit" id="edit-${idx}" type="number"
+      value="${share.yDisplay}"
+      onkeydown="if(event.key==='Enter') confirmEdit(${idx})"
+      onblur="confirmEdit(${idx})" />
+  `;
+  document.getElementById(`edit-${idx}`).focus();
+}
+
+function confirmEdit(idx) {
+  const input = document.getElementById(`edit-${idx}`);
+  if (!input) return;
+  const newVal = parseInt(input.value);
+  if (isNaN(newVal) || newVal < 0 || newVal >= P) {
+    renderSharesTable();
+    return;
+  }
+  state.shares[idx].yDisplay = newVal;
+  state.shares[idx].tampered = (newVal !== state.shares[idx].yTrue);
+  renderSharesTable();
+  updateReconstructBtn();
+}
+
+function resetShare(idx) {
+  state.shares[idx].yDisplay = state.shares[idx].yTrue;
+  state.shares[idx].tampered = false;
+  renderSharesTable();
+  updateReconstructBtn();
+}
+
+function toggleSelect(idx) {
+  state.shares[idx].selected = !state.shares[idx].selected;
+  const row = document.getElementById(`row-${idx}`);
+  if (row) row.classList.toggle('selected-row', state.shares[idx].selected);
+  document.getElementById('selected-count').textContent =
+    state.shares.filter(s => s.selected).length;
+  updateReconstructBtn();
+}
+
+function clearSelection() {
+  state.shares.forEach(s => s.selected = false);
+  renderSharesTable();
+  document.getElementById('selected-count').textContent = '0';
+  updateReconstructBtn();
+}
+
+function updateReconstructBtn() {
+  const selected = state.shares.filter(s => s.selected).length;
+  const btn = document.getElementById('btn-reconstruct');
+  if (btn) btn.disabled = selected < state.k;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Share verification
+// ─────────────────────────────────────────────────────────────
+function updateVerifyPreview() {
+  const xEl = document.getElementById('v-x');
+  const yEl = document.getElementById('v-y');
+  document.getElementById('vf-x-preview').textContent = xEl.value || 'x';
+  document.getElementById('vf-y-preview').textContent = yEl.value !== '' ? yEl.value : 'y';
+}
+
+function verifyShare() {
+  if (!state.secret) { alert('Generate shares first.'); return; }
+
+  const x = parseInt(document.getElementById('v-x').value);
+  const claimedY = parseInt(document.getElementById('v-y').value);
+
+  if (isNaN(x) || isNaN(claimedY)) { alert('Enter valid x and f(x) values.'); return; }
+
+  const share = state.shares.find(s => s.x === x);
+  if (!share) {
+    alert(`No share exists for x=${x}. Try a value between 1 and ${state.n}.`);
+    return;
+  }
+
+  const trueY = share.yTrue;
+  const isValid = claimedY === trueY;
+
+  const resultEl = document.getElementById('verify-result');
+  const explainerEl = document.getElementById('verify-explainer');
+  const explainText = document.getElementById('verify-explain-text');
+
+  resultEl.className = `verify-result visible ${isValid ? 'result-valid' : 'result-invalid'}`;
+
+  resultEl.innerHTML = `
+    <div class="result-header">
+      <span class="result-icon">${isValid ? '✓' : '✗'}</span>
+      ${isValid
+        ? `f(${x}) = ${claimedY} — VALID SHARE`
+        : `f(${x}) = ${claimedY} — INVALID SHARE`}
+    </div>
+    <div class="proof-details">
+      <div class="proof-line">
+        <span class="proof-label">Claimed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→</span>
+        <span class="proof-value">f(${x}) = ${claimedY}</span>
+      </div>
+      <div class="proof-line">
+        <span class="proof-label">True value →</span>
+        <span class="proof-value ${isValid ? 'match' : 'no-match'}">${trueY}</span>
+      </div>
+      <div class="proof-line">
+        <span class="proof-label">Result&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→</span>
+        <span class="proof-value ${isValid ? 'match' : 'no-match'}">
+          ${isValid ? `${claimedY} = ${trueY} ✓` : `${claimedY} ≠ ${trueY} ✗`}
+        </span>
+      </div>
+    </div>
+  `;
+
+  explainerEl.style.display = 'block';
+  explainText.innerHTML = isValid
+    ? `The point (${x}, ${claimedY}) lies on the secret polynomial <strong>f</strong>.
+       Presenting this share in a reconstruction session will contribute the correct value.
+       If this holder joins K−1 other valid holders, the private key will be correctly recovered.`
+    : `The point (${x}, ${claimedY}) does <strong>not</strong> lie on the secret polynomial.
+       This could be a corrupted share, a malicious claim, or a transmission error.
+       Including this share in a reconstruction attempt will produce a <strong>wrong key</strong> —
+       without revealing what the correct key is.`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Key reconstruction via Lagrange interpolation
+// ─────────────────────────────────────────────────────────────
+function lagrange(points, queryX = 0) {
+  let result = 0;
+  const n = points.length;
+
+  for (let i = 0; i < n; i++) {
+    let num = 1;
+    let den = 1;
+
+    for (let j = 0; j < n; j++) {
+      if (i !== j) {
+        // numerator: ∏ (x - x_j) mod P
+        num = gfMod(Math.round((num * gfMod(queryX - points[j].x)) % P));
+        // denominator: ∏ (x_i - x_j) mod P
+        den = gfMod(Math.round((den * gfMod(points[i].x - points[j].x)) % P));
+      }
+    }
+
+    // term: y_i * (num * den^{-1}) mod P
+    const li = gfMod(Math.round((num * gfInv(den)) % P));
+    const term = gfMod(Math.round((points[i].y * li) % P));
+    result = gfMod(result + term);
+  }
+
+  return result;
+}
+
+function reconstruct() {
+  const selected = state.shares.filter(s => s.selected);
+
+  if (selected.length < state.k) {
+    alert(`Need at least ${state.k} shares.`);
+    return;
+  }
+
+  const points = selected.map(s => ({ x: s.x, y: s.yDisplay }));
+  const recovered = lagrange(points);
+  const isCorrect = recovered === state.secret;
+  const hasTampered = selected.some(s => s.tampered);
+
+  const resultEl = document.getElementById('recon-result');
+  resultEl.style.display = 'block';
+
+  if (selected.length < state.k) {
+    resultEl.className = 'recon-result visible warning';
+    resultEl.innerHTML = `
+      <div class="result-header" style="color:var(--orange)">
+        <span class="result-icon">⚠</span> Insufficient shares
+      </div>
+      <p class="recon-message">
+        Selected <strong>${selected.length}</strong> shares but need at least
+        <strong>${state.k}</strong>. Cannot reconstruct.
+      </p>`;
+    return;
+  }
+
+  // Build Lagrange steps display
+  const holderNames = selected.map(s => NAMES[s.x - 1] || `Holder ${s.x}`).join(', ');
+  const pointsStr = selected.map(s => `(${s.x}, ${s.yDisplay})`).join(' · ');
+
+  resultEl.className = `recon-result visible ${isCorrect ? 'success' : 'failure'}`;
+  resultEl.innerHTML = `
+    <div class="result-header" style="color:${isCorrect ? 'var(--green)' : 'var(--red)'}">
+      <span class="result-icon">${isCorrect ? '🔓' : '🔒'}</span>
+      ${isCorrect ? 'Key successfully reconstructed' : 'Reconstruction failed — tampered share detected'}
+    </div>
+    <div class="recon-key ${isCorrect ? 'correct' : 'wrong'}">${recovered}</div>
+    <p class="recon-message">
+      ${isCorrect
+        ? `Using shares from <strong>${holderNames}</strong>, Lagrange interpolation reconstructed
+           f(0) = <strong>${recovered}</strong>. This matches the original private key exactly.`
+        : `Using shares from <strong>${holderNames}</strong>, interpolation gave f(0) = <strong>${recovered}</strong>,
+           which does <strong>not</strong> match the actual key.
+           ${hasTampered ? 'A tampered share is in the selection — the polynomial does not fit.' : ''}`}
+    </p>
+    <div class="lagrange-steps">
+      <div class="lagrange-step">Points used: ${pointsStr}</div>
+      <div class="lagrange-step">Field: GF(${P}) — degree ${state.k - 1} polynomial</div>
+      <div class="lagrange-step final">f(0) = ${recovered} ${isCorrect ? '✓ matches secret' : '✗ mismatch'}</div>
+    </div>
+  `;
+}
+
+// Init preview
+document.getElementById('v-x') && document.getElementById('v-x').addEventListener('input', updateVerifyPreview);
+document.getElementById('v-y') && document.getElementById('v-y').addEventListener('input', updateVerifyPreview);
+</script>
+</Layout>
