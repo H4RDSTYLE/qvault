@@ -1,0 +1,118 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Quantum-secured key distribution and cryptographic infrastructure." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <style>
+      :root {
+        --bg: #050a0e;
+        --surface: #0a1628;
+        --accent: #00d4ff;
+        --accent2: #0066cc;
+        --text: #e0f0ff;
+        --muted: #4a6fa5;
+        --border: #0a3a5c;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 4rem;
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(5, 10, 14, 0.85);
+      }
+
+      .logo {
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--accent);
+      }
+
+      .logo span { color: var(--text); }
+
+      nav ul {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+
+      nav a:hover { color: var(--accent); }
+
+      .cta-btn {
+        background: var(--accent);
+        color: var(--bg) !important;
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem !important;
+      }
+
+      .cta-btn:hover { opacity: 0.9; }
+
+      main { min-height: calc(100vh - 80px); }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 4rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      footer a { color: var(--muted); text-decoration: none; }
+      footer a:hover { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">Q<span>Vault</span></div>
+      <ul>
+        <li><a href="#">Technology</a></li>
+        <li><a href="#">Solutions</a></li>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">Company</a></li>
+        <li><a href="#" class="cta-btn">Request Access</a></li>
+      </ul>
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <p>&copy; 2026 QVault &mdash; Part of <a href="#">Quantum Nexus Group</a>. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

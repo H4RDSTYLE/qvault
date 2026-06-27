@@ -1,0 +1,245 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="QVault — Quantum Security & Key Distribution">
+  <style>
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(ellipse, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: #00d4ff;
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #00d4ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #00d4ff, #0066cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: #4a6fa5;
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d4ff, #0066cc);
+      color: #050a0e;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e0f0ff;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid #0a3a5c;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: #00d4ff; transform: translateY(-1px); }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: #0a1628;
+      border: 1px solid #0a3a5c;
+      border-radius: 12px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(0, 212, 255, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #e0f0ff;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: #4a6fa5;
+      line-height: 1.65;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      padding: 4rem;
+      border-top: 1px solid #0a3a5c;
+      border-bottom: 1px solid #0a3a5c;
+      flex-wrap: wrap;
+    }
+
+    .stat h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #00d4ff;
+      letter-spacing: -0.03em;
+    }
+
+    .stat p {
+      font-size: 0.85rem;
+      color: #4a6fa5;
+      margin-top: 0.25rem;
+    }
+  </style>
+
+  <section class="hero">
+    <div class="badge">Quantum Key Distribution</div>
+    <h1>Unbreakable security,<br><span>quantum guaranteed</span></h1>
+    <p class="subtitle">
+      QVault delivers post-quantum cryptography and QKD infrastructure that protects your most critical data against both classical and quantum threats.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Request Access</a>
+      <a href="#" class="btn-secondary">Read Whitepaper</a>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <h2>256-bit</h2>
+      <p>Post-quantum key strength</p>
+    </div>
+    <div class="stat">
+      <h2>&lt;1ms</h2>
+      <p>Key exchange latency</p>
+    </div>
+    <div class="stat">
+      <h2>100%</h2>
+      <p>Information-theoretic security</p>
+    </div>
+    <div class="stat">
+      <h2>NIST</h2>
+      <p>PQC standards compliant</p>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>Quantum Key Distribution</h3>
+      <p>Leverage the laws of quantum mechanics to distribute cryptographic keys with unconditional security, making interception physically impossible.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <h3>Post-Quantum Cryptography</h3>
+      <p>NIST-approved algorithms (CRYSTALS-Kyber, CRYSTALS-Dilithium) that remain secure against quantum computer attacks.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>Hybrid Security Architecture</h3>
+      <p>Seamlessly combine classical and quantum cryptography layers for defense-in-depth during the quantum transition period.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Hardware Security Modules</h3>
+      <p>Tamper-proof quantum HSMs for key generation, storage, and management at enterprise and government scale.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>Network Integration</h3>
+      <p>Drop-in compatibility with existing PKI infrastructure. Upgrade to quantum security without replacing your entire stack.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Audit & Compliance</h3>
+      <p>Real-time monitoring, immutable audit logs, and compliance reporting for FIPS 140-3, CC EAL4+, and sector-specific standards.</p>
+    </div>
+  </section>
+</Layout>
