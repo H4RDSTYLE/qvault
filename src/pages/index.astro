@@ -2,244 +2,443 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="QVault — Quantum Security & Key Distribution">
-  <style>
-    .hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 6rem;
-      position: relative;
-      overflow: hidden;
-    }
+<Layout title="QVault — Post-Quantum Security Infrastructure">
+<style>
+  /* ── RESET & TOKENS ───────────────────────────────── */
+  :root {
+    --bg: #050a0e;
+    --surface: #0a1628;
+    --accent: #00d4ff;
+    --accent-dim: rgba(0,212,255,.12);
+    --text: #e0f0ff;
+    --muted: #4a6fa5;
+    --border: #0a3a5c;
+    --radius: 12px;
+  }
+  section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+  h2.section-title {
+    font-size: 2rem; font-weight: 800; letter-spacing: -.03em;
+    margin-bottom: .5rem;
+  }
+  .section-sub { color: var(--muted); margin-bottom: 3rem; font-size: 1rem; line-height: 1.6; }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 0 4rem; }
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(ellipse, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
+  /* ── HERO ─────────────────────────────────────────── */
+  .hero {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 9rem 2rem 6rem; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; top:-30%; left:50%; transform:translateX(-50%);
+    width:900px; height:900px;
+    background:radial-gradient(ellipse,rgba(0,212,255,.07) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .badge {
+    display:inline-flex; align-items:center; gap:.5rem;
+    background:var(--accent-dim); border:1px solid rgba(0,212,255,.3);
+    color:var(--accent); padding:.35rem 1rem; border-radius:100px;
+    font-size:.75rem; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; margin-bottom:2rem;
+  }
+  .badge::before {
+    content:''; width:6px; height:6px; background:var(--accent);
+    border-radius:50%; animation:blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(0, 212, 255, 0.1);
-      border: 1px solid rgba(0, 212, 255, 0.3);
-      color: #00d4ff;
-      padding: 0.35rem 1rem;
-      border-radius: 100px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 2rem;
-    }
+  h1 {
+    font-size:clamp(2.6rem,6vw,5.2rem); font-weight:800;
+    letter-spacing:-.04em; line-height:1.04; max-width:820px; margin-bottom:1.5rem;
+  }
+  h1 span {
+    background:linear-gradient(135deg,#00d4ff,#0066cc);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .hero-sub {
+    font-size:1.1rem; color:var(--muted); max-width:560px;
+    line-height:1.75; margin-bottom:2.5rem;
+  }
+  .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+  .btn-primary {
+    background:linear-gradient(135deg,#00d4ff,#0066cc); color:#050a0e;
+    padding:.85rem 2rem; border-radius:8px; text-decoration:none;
+    font-weight:700; font-size:.9rem; transition:opacity .2s,transform .2s;
+  }
+  .btn-primary:hover { opacity:.88; transform:translateY(-1px); }
+  .btn-ghost {
+    background:transparent; color:var(--text); padding:.85rem 2rem;
+    border-radius:8px; text-decoration:none; font-weight:600;
+    font-size:.9rem; border:1px solid var(--border);
+    transition:border-color .2s,transform .2s;
+  }
+  .btn-ghost:hover { border-color:var(--accent); transform:translateY(-1px); }
 
-    .badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: #00d4ff;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
+  /* ── LOGOS BAR ────────────────────────────────────── */
+  .trust-bar {
+    padding:2rem 4rem; border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border); background:var(--surface);
+    display:flex; align-items:center; justify-content:center; gap:3rem;
+    flex-wrap:wrap;
+  }
+  .trust-label { font-size:.72rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+  .trust-logos { display:flex; gap:2.5rem; align-items:center; flex-wrap:wrap; }
+  .trust-logo {
+    font-size:.8rem; font-weight:700; color:var(--muted);
+    letter-spacing:.04em; text-transform:uppercase; opacity:.6;
+  }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+  /* ── TECHNOLOGY ───────────────────────────────────── */
+  .tech-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:3rem;
+  }
+  .tech-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:2rem;
+    transition:border-color .25s,transform .25s;
+  }
+  .tech-card:hover { border-color:rgba(0,212,255,.35); transform:translateY(-3px); }
+  .tech-card:first-child { grid-column:1/-1; }
+  .tech-tag {
+    display:inline-block; font-size:.7rem; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--accent);
+    background:var(--accent-dim); padding:.25rem .7rem; border-radius:4px;
+    margin-bottom:1rem;
+  }
+  .tech-card h3 { font-size:1.15rem; font-weight:700; margin-bottom:.75rem; }
+  .tech-card p { font-size:.88rem; color:var(--muted); line-height:1.7; }
+  .tech-card ul { margin-top:1rem; padding-left:1.2rem; }
+  .tech-card ul li { font-size:.85rem; color:var(--muted); margin-bottom:.4rem; }
 
-    h1 {
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1.05;
-      max-width: 800px;
-      margin-bottom: 1.5rem;
-    }
+  /* ── TEAM ─────────────────────────────────────────── */
+  .team-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1.5rem;
+  }
+  .team-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:1.75rem; display:flex; flex-direction:column; gap:1rem;
+  }
+  .avatar {
+    width:52px; height:52px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center;
+    font-size:1.1rem; font-weight:800; flex-shrink:0;
+  }
+  .av-blue { background:linear-gradient(135deg,#00d4ff,#0066cc); color:#050a0e; }
+  .av-navy { background:linear-gradient(135deg,#0066cc,#003d7a); color:#e0f0ff; }
+  .av-teal { background:linear-gradient(135deg,#00b8d9,#007fa3); color:#050a0e; }
+  .av-slate { background:linear-gradient(135deg,#1e4d7b,#0a2a4a); color:#e0f0ff; }
+  .team-card h3 { font-size:1rem; font-weight:700; margin-bottom:.1rem; }
+  .team-role { font-size:.78rem; color:var(--accent); font-weight:600; }
+  .team-bio { font-size:.82rem; color:var(--muted); line-height:1.6; }
+  .team-prev { font-size:.75rem; color:var(--muted); opacity:.7; margin-top:.25rem; }
 
-    h1 span {
-      background: linear-gradient(135deg, #00d4ff, #0066cc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+  /* ── RESEARCH ─────────────────────────────────────── */
+  .post-list { display:flex; flex-direction:column; gap:1px; }
+  .post-item {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:1.75rem 0; border-bottom:1px solid var(--border); gap:2rem;
+  }
+  .post-item:last-child { border-bottom:none; }
+  .post-meta { display:flex; gap:.75rem; align-items:center; margin-bottom:.5rem; }
+  .post-cat {
+    font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--accent);
+    background:var(--accent-dim); padding:.2rem .6rem; border-radius:4px;
+  }
+  .post-date { font-size:.78rem; color:var(--muted); }
+  .post-item h3 { font-size:1rem; font-weight:700; margin-bottom:.4rem; line-height:1.4; }
+  .post-item p { font-size:.85rem; color:var(--muted); line-height:1.6; max-width:600px; }
+  .post-link {
+    font-size:.82rem; color:var(--accent); text-decoration:none;
+    white-space:nowrap; font-weight:600; flex-shrink:0; margin-top:.25rem;
+    display:flex; align-items:center; gap:.3rem;
+  }
+  .post-link:hover { text-decoration:underline; }
 
-    .subtitle {
-      font-size: 1.15rem;
-      color: #4a6fa5;
-      max-width: 540px;
-      line-height: 1.7;
-      margin-bottom: 3rem;
-    }
+  /* ── CONTACT ──────────────────────────────────────── */
+  .contact-wrapper {
+    display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start;
+  }
+  .contact-left h2 { font-size:2rem; font-weight:800; letter-spacing:-.03em; margin-bottom:1rem; }
+  .contact-left p { color:var(--muted); font-size:.92rem; line-height:1.7; margin-bottom:1.5rem; }
+  .contact-detail { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; }
+  .contact-detail span { font-size:.85rem; color:var(--muted); }
+  .contact-detail a { color:var(--accent); text-decoration:none; font-size:.85rem; }
+  .contact-detail a:hover { text-decoration:underline; }
+  .waitlist-form { display:flex; flex-direction:column; gap:1rem; }
+  .form-group { display:flex; flex-direction:column; gap:.4rem; }
+  .form-group label { font-size:.78rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .form-group input, .form-group select {
+    background:#0a1628; border:1px solid var(--border); color:var(--text);
+    border-radius:8px; padding:.75rem 1rem; font-size:.9rem;
+    outline:none; transition:border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:var(--accent); }
+  .form-group select option { background:#0a1628; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .btn-submit {
+    background:linear-gradient(135deg,#00d4ff,#0066cc); color:#050a0e;
+    border:none; padding:.9rem 2rem; border-radius:8px;
+    font-weight:700; font-size:.9rem; cursor:pointer;
+    transition:opacity .2s; text-align:center;
+  }
+  .btn-submit:hover { opacity:.88; }
+  .form-note { font-size:.75rem; color:var(--muted); text-align:center; }
 
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+  @media(max-width:768px) {
+    section { padding:4rem 1.5rem; }
+    .tech-grid { grid-template-columns:1fr; }
+    .tech-card:first-child { grid-column:auto; }
+    .contact-wrapper { grid-template-columns:1fr; gap:2rem; }
+    hr.divider { margin:0 1.5rem; }
+    .trust-bar { padding:2rem 1.5rem; gap:1.5rem; }
+    .form-row { grid-template-columns:1fr; }
+  }
+</style>
 
-    .btn-primary {
-      background: linear-gradient(135deg, #00d4ff, #0066cc);
-      color: #050a0e;
-      padding: 0.9rem 2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.95rem;
-      transition: opacity 0.2s, transform 0.2s;
-    }
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="badge">Post-Quantum Security</div>
+  <h1>Encrypt today<br>against <span>tomorrow's threats</span></h1>
+  <p class="hero-sub">
+    QVault delivers NIST-certified post-quantum cryptography and hardware QKD infrastructure for enterprises and governments that cannot afford to wait for the quantum threat to arrive.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Request a Demo</a>
+    <a href="#research" class="btn-ghost">Read Whitepaper</a>
+  </div>
+</section>
 
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+<div class="trust-bar">
+  <span class="trust-label">Compliant with</span>
+  <div class="trust-logos">
+    <span class="trust-logo">NIST PQC</span>
+    <span class="trust-logo">FIPS 140-3</span>
+    <span class="trust-logo">CC EAL4+</span>
+    <span class="trust-logo">ISO/IEC 27001</span>
+    <span class="trust-logo">eIDAS 2.0</span>
+  </div>
+</div>
 
-    .btn-secondary {
-      background: transparent;
-      color: #e0f0ff;
-      padding: 0.9rem 2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: 1px solid #0a3a5c;
-      transition: border-color 0.2s, transform 0.2s;
-    }
+<hr class="divider" />
 
-    .btn-secondary:hover { border-color: #00d4ff; transform: translateY(-1px); }
+<!-- TECHNOLOGY -->
+<section id="technology">
+  <h2 class="section-title">Two layers of quantum protection</h2>
+  <p class="section-sub">
+    QVault combines post-quantum cryptographic algorithms with hardware-based Quantum Key Distribution,<br>
+    providing defense-in-depth across your entire cryptographic surface.
+  </p>
 
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      padding: 4rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .feature-card {
-      background: #0a1628;
-      border: 1px solid #0a3a5c;
-      border-radius: 12px;
-      padding: 2rem;
-      transition: border-color 0.3s, transform 0.3s;
-    }
-
-    .feature-card:hover {
-      border-color: rgba(0, 212, 255, 0.4);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .feature-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      color: #e0f0ff;
-    }
-
-    .feature-card p {
-      font-size: 0.9rem;
-      color: #4a6fa5;
-      line-height: 1.65;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 4rem;
-      padding: 4rem;
-      border-top: 1px solid #0a3a5c;
-      border-bottom: 1px solid #0a3a5c;
-      flex-wrap: wrap;
-    }
-
-    .stat h2 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: #00d4ff;
-      letter-spacing: -0.03em;
-    }
-
-    .stat p {
-      font-size: 0.85rem;
-      color: #4a6fa5;
-      margin-top: 0.25rem;
-    }
-  </style>
-
-  <section class="hero">
-    <div class="badge">Quantum Key Distribution</div>
-    <h1>Unbreakable security,<br><span>quantum guaranteed</span></h1>
-    <p class="subtitle">
-      QVault delivers post-quantum cryptography and QKD infrastructure that protects your most critical data against both classical and quantum threats.
-    </p>
-    <div class="hero-actions">
-      <a href="#" class="btn-primary">Request Access</a>
-      <a href="#" class="btn-secondary">Read Whitepaper</a>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <span class="tech-tag">Layer 1 — Algorithmic</span>
+      <h3>Post-Quantum Cryptography (PQC)</h3>
+      <p>
+        We implement the four NIST-selected PQC algorithms — CRYSTALS-Kyber (key encapsulation), CRYSTALS-Dilithium and FALCON (digital signatures), and SPHINCS+ (hash-based signatures) — and migrate them into your existing PKI without service interruption.
+      </p>
+      <ul>
+        <li>Drop-in replacement for RSA-2048 and ECC-256 across TLS, SSH, S/MIME and code signing</li>
+        <li>Zero-downtime migration via our hybrid X.509 certificate toolchain</li>
+        <li>Crypto-agility layer: algorithm rotation without application changes</li>
+        <li>Hardware acceleration via our PQC-enabled HSM (QV-HSM 1.0, FIPS 140-3 Level 3)</li>
+      </ul>
     </div>
-  </section>
 
-  <div class="stats">
-    <div class="stat">
-      <h2>256-bit</h2>
-      <p>Post-quantum key strength</p>
+    <div class="tech-card">
+      <span class="tech-tag">Layer 2 — Physical</span>
+      <h3>Quantum Key Distribution (QKD)</h3>
+      <p>
+        Our QKD nodes use the BB84 and Coherent-One-Way (COW) protocols over standard single-mode fiber to distribute symmetric keys whose security is guaranteed by the laws of quantum mechanics — any interception attempt is detectable and causes key discard.
+      </p>
+      <ul>
+        <li>Key generation rate: 10 Mbps over 80 km of deployed SMF-28 fiber</li>
+        <li>Metropolitan area networks up to 150 km with trusted relay nodes</li>
+        <li>ETSI GS QKD 014 compliant API for seamless SIEM integration</li>
+      </ul>
     </div>
-    <div class="stat">
-      <h2>&lt;1ms</h2>
-      <p>Key exchange latency</p>
-    </div>
-    <div class="stat">
-      <h2>100%</h2>
-      <p>Information-theoretic security</p>
-    </div>
-    <div class="stat">
-      <h2>NIST</h2>
-      <p>PQC standards compliant</p>
+
+    <div class="tech-card">
+      <span class="tech-tag">Layer 3 — Operational</span>
+      <h3>Crypto Asset Management & Audit</h3>
+      <p>
+        Most enterprises do not know the full extent of their cryptographic inventory. QVault's discovery engine scans your infrastructure — cloud, on-premise, OT — maps every certificate, key, and algorithm in use, and generates a prioritized quantum-risk report.
+      </p>
+      <ul>
+        <li>Automated cryptographic bill of materials (CBOM) for compliance reporting</li>
+        <li>Real-time alerting on certificate expiry and algorithm deprecation</li>
+        <li>Integrates with Splunk, Datadog, Microsoft Sentinel and major SIEMs</li>
+      </ul>
     </div>
   </div>
+</section>
 
-  <section class="features">
-    <div class="feature-card">
-      <div class="feature-icon">🔐</div>
-      <h3>Quantum Key Distribution</h3>
-      <p>Leverage the laws of quantum mechanics to distribute cryptographic keys with unconditional security, making interception physically impossible.</p>
+<hr class="divider" />
+
+<!-- TEAM -->
+<section id="team">
+  <h2 class="section-title">Built by cryptographers, for the real world</h2>
+  <p class="section-sub">Our team combines decades at standards bodies, national security agencies, and enterprise security engineering.</p>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="avatar av-blue">EV</div>
+      <div>
+        <h3>Dr. Elena Vasquez</h3>
+        <div class="team-role">CEO & Co-founder</div>
+        <div class="team-prev">Previously: NIST Cryptographic Technology Group</div>
+      </div>
+      <p class="team-bio">
+        Led post-quantum standardization efforts at NIST for six years, contributing to the evaluation of all Round 3 candidates. PhD in Physics from MIT, specializing in quantum information theory. Author of the NIST IR 8413 implementation guidance.
+      </p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🛡️</div>
-      <h3>Post-Quantum Cryptography</h3>
-      <p>NIST-approved algorithms (CRYSTALS-Kyber, CRYSTALS-Dilithium) that remain secure against quantum computer attacks.</p>
+
+    <div class="team-card">
+      <div class="avatar av-navy">JP</div>
+      <div>
+        <h3>Dr. James Park</h3>
+        <div class="team-role">CTO & Co-founder</div>
+        <div class="team-prev">Previously: IBM Research Quantum, Yorktown Heights</div>
+      </div>
+      <p class="team-bio">
+        Spent nine years at IBM Research designing quantum-safe protocols for IBM's enterprise product line. Holds 14 granted patents in quantum cryptographic key management. PhD in Computer Science from Stanford.
+      </p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔗</div>
-      <h3>Hybrid Security Architecture</h3>
-      <p>Seamlessly combine classical and quantum cryptography layers for defense-in-depth during the quantum transition period.</p>
+
+    <div class="team-card">
+      <div class="avatar av-teal">AK</div>
+      <div>
+        <h3>Dr. Anastasia Kovač</h3>
+        <div class="team-role">Chief Cryptographer</div>
+        <div class="team-prev">Previously: BSI (German Federal Office for Information Security)</div>
+      </div>
+      <p class="team-bio">
+        Designed the post-quantum migration framework adopted by the EU's NIS2 directive technical annex. PhD in Mathematics from ETH Zurich. Co-chair of ETSI's Quantum Safe Cryptography working group.
+      </p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <h3>Hardware Security Modules</h3>
-      <p>Tamper-proof quantum HSMs for key generation, storage, and management at enterprise and government scale.</p>
+
+    <div class="team-card">
+      <div class="avatar av-slate">MT</div>
+      <div>
+        <h3>Marcus Thompson</h3>
+        <div class="team-role">VP Engineering</div>
+        <div class="team-prev">Previously: NSA Information Assurance Directorate</div>
+      </div>
+      <p class="team-bio">
+        Shipped three FIPS 140-3 validated cryptographic modules during 11 years at the NSA. Holds a MS in Computer Engineering from Carnegie Mellon. Now leads QVault's hardware and firmware engineering team.
+      </p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">🌐</div>
-      <h3>Network Integration</h3>
-      <p>Drop-in compatibility with existing PKI infrastructure. Upgrade to quantum security without replacing your entire stack.</p>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- RESEARCH -->
+<section id="research">
+  <h2 class="section-title">Research & Publications</h2>
+  <p class="section-sub">Technical writing from our team on post-quantum cryptography, QKD deployment, and enterprise migration.</p>
+
+  <div class="post-list">
+    <div class="post-item">
+      <div>
+        <div class="post-meta">
+          <span class="post-cat">Whitepaper</span>
+          <span class="post-date">March 2026</span>
+        </div>
+        <h3>CRYSTALS-Kyber in Production: Performance Benchmarks Across 10,000 TLS Connections</h3>
+        <p>
+          We deployed CRYSTALS-Kyber-768 alongside X25519 in a hybrid key exchange across a simulated enterprise environment of 10,000 simultaneous TLS 1.3 sessions. This paper presents latency, throughput, and CPU overhead data across three hardware profiles.
+        </p>
+      </div>
+      <a href="#research" class="post-link">Read →</a>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>Audit & Compliance</h3>
-      <p>Real-time monitoring, immutable audit logs, and compliance reporting for FIPS 140-3, CC EAL4+, and sector-specific standards.</p>
+
+    <div class="post-item">
+      <div>
+        <div class="post-meta">
+          <span class="post-cat">Threat Analysis</span>
+          <span class="post-date">January 2026</span>
+        </div>
+        <h3>Harvest Now, Decrypt Later: Quantifying the Real Risk Window for Enterprise Data</h3>
+        <p>
+          State-level adversaries are already archiving encrypted traffic today to decrypt once a cryptographically relevant quantum computer exists. We model the risk window for different data sensitivity levels and propose a prioritized migration roadmap.
+        </p>
+      </div>
+      <a href="#research" class="post-link">Read →</a>
     </div>
-  </section>
+
+    <div class="post-item">
+      <div>
+        <div class="post-meta">
+          <span class="post-cat">Engineering Guide</span>
+          <span class="post-date">October 2025</span>
+        </div>
+        <h3>Migrating Enterprise PKI to Post-Quantum Cryptography Without Service Interruption</h3>
+        <p>
+          A step-by-step operational guide for PKI teams to introduce hybrid certificate chains, crypto-agile TLS configurations, and staged rollout strategies that maintain full backward compatibility throughout the migration period.
+        </p>
+      </div>
+      <a href="#research" class="post-link">Read →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrapper">
+    <div class="contact-left">
+      <h2>Get early access</h2>
+      <p>
+        QVault is currently in private beta with a select group of enterprise and government customers. Join the waitlist and our team will reach out within 5 business days.
+      </p>
+      <p>For immediate enterprise inquiries:</p>
+      <div class="contact-detail">
+        <span>✉</span>
+        <a href="mailto:security@qvault.io">security@qvault.io</a>
+      </div>
+      <div class="contact-detail">
+        <span>📍</span>
+        <span>Washington D.C. · London · Berlin</span>
+      </div>
+    </div>
+
+    <form class="waitlist-form" onsubmit="return false;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First name</label>
+          <input type="text" placeholder="Elena" />
+        </div>
+        <div class="form-group">
+          <label>Last name</label>
+          <input type="text" placeholder="Vasquez" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Work email</label>
+        <input type="email" placeholder="you@company.com" />
+      </div>
+      <div class="form-group">
+        <label>Organization</label>
+        <input type="text" placeholder="Acme Corp" />
+      </div>
+      <div class="form-group">
+        <label>Primary use case</label>
+        <select>
+          <option value="">Select one…</option>
+          <option>PKI / Certificate migration</option>
+          <option>Quantum Key Distribution</option>
+          <option>Cryptographic inventory & audit</option>
+          <option>Government / defense compliance</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <button class="btn-submit">Request Access</button>
+      <p class="form-note">No spam. We respond to every request personally.</p>
+    </form>
+  </div>
+</section>
 </Layout>
